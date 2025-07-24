@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/index.js",
-    "nodemon": "nodemon --watch 'src/**/*.ts' --exec ts-node src/index.ts",
+    "prebuild": "pnpm --filter @repo/db run db:generate",
     "build": "tsc -b",
+    "prestart": "pnpm run build",
+    "start": "node ./dist/index.js",
     "dev": "pnpm run build && pnpm run nodemon"
   },
   "keywords": [],

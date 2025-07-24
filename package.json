@@ -2,6 +2,7 @@
   "name": "CollaborativeDraw",
   "private": true,
   "scripts": {
+    "clean": "rm -rf ./packages/*/dist ./apps/*/dist ./node_modules/.prisma && rm -rf node_modules && rm -rf pnpm-lock.yaml",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",

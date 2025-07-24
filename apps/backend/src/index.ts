@@ -9,7 +9,8 @@ import {
 import bcrypt from "bcrypt";
 import cors from "cors";
 import { Request, Response } from "express";
-import { prismaClient } from "@repo/db/client";
+import { PrismaClient } from "@prisma/client";
+const prismaClient = new PrismaClient();
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || "123123";
 
