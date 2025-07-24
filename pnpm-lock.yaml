@@ -18,7 +18,7 @@ importers:
         specifier: 5.8.3
         version: 5.8.3
 
-  apps/http-server:
+  apps/backend:
     dependencies:
       '@repo/db':
         specifier: workspace:*
