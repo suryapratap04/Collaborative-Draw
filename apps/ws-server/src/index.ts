@@ -1,9 +1,16 @@
-import { WebSocket, WebSocketServer } from "ws";
+import express from "express";
+import http from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
-const JWT_SECRET = process.env.JWT_SECRET || "123123";
 import { PrismaClient } from "@prisma/client";
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+const PORT = process.env.PORT || 8080;
+const JWT_SECRET = process.env.JWT_SECRET || "123123";
 const prismaClient = new PrismaClient();
-const wss = new WebSocketServer({ port: 8080 });
 
 interface User {
   ws: WebSocket;
@@ -13,96 +20,118 @@ interface User {
 
 const users: User[] = [];
 
+// Validate JWT and return userId
 function checkUser(token: string): string | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    // console.log("Decoded JWT in the Websocket Server :", decoded);
-
-    if (typeof decoded == "string") {
+    if (typeof decoded !== "object" || !decoded || !("userId" in decoded)) {
       return null;
     }
-
-    if (!decoded || !decoded.userId) {
-      return null;
-    }
-
-    return decoded.userId;
-  } catch (e) {
+    return (decoded as any).userId;
+  } catch {
     return null;
   }
 }
 
-wss.on("connection", function connection(ws, request) {
-  // console.log("New WebSocket connection established");
+wss.on("connection", (ws, request) => {
   const url = request.url;
-  // console.log("WebSocket URL:", url);
   if (!url) {
-    // console.log("No URL provided in the WebSocket connection request.");
     ws.close();
     return;
   }
+
   const queryParams = new URLSearchParams(url.split("?")[1]);
   const token = queryParams.get("token") || "";
   const userId = checkUser(token);
 
-  if (userId == null) {
+  if (!userId) {
     ws.close();
-    return null;
+    return;
   }
 
-  users.push({
-    userId,
-    rooms: [],
-    ws,
-  });
+  const user: User = { ws, rooms: [], userId };
+  users.push(user);
 
-  ws.on("message", async function message(data) {
-    let parsedData;
-    if (typeof data !== "string") {
-      parsedData = JSON.parse(data.toString());
-    } else {
-      parsedData = JSON.parse(data); // {type: "join-room", roomId: 1}
+  ws.on("message", async (data) => {
+    let parsedData: any;
+
+    try {
+      parsedData =
+        typeof data === "string"
+          ? JSON.parse(data)
+          : JSON.parse(data.toString());
+    } catch (err) {
+      console.error("Invalid JSON received:", data);
+      return;
     }
 
-    if (parsedData.type === "join_room") {
-      const user = users.find((x) => x.ws === ws);
-      user?.rooms.push(parsedData.roomId);
-    }
+    if (!parsedData?.type) return;
 
-    if (parsedData.type === "leave_room") {
-      const user = users.find((x) => x.ws === ws);
-      if (!user) {
-        return;
-      }
-      user.rooms = user?.rooms.filter((x) => x === parsedData.room);
-    }
-
-    // console.log("message received");
-    // console.log(parsedData);
-
-    if (parsedData.type === "chat") {
-      const roomId = parsedData.roomId;
-      const message = parsedData.message;
-
-      await prismaClient.chat.create({
-        data: {
-          roomId: Number(roomId),
-          message,
-          userId,
-        },
-      });
-
-      users.forEach((user) => {
-        if (user.rooms.includes(roomId)) {
-          user.ws.send(
-            JSON.stringify({
-              type: "chat",
-              message: message,
-              roomId,
-            })
-          );
+    switch (parsedData.type) {
+      case "join_room": {
+        if (!parsedData.roomId) return;
+        if (!user.rooms.includes(parsedData.roomId)) {
+          user.rooms.push(parsedData.roomId);
         }
-      });
+        break;
+      }
+
+      case "leave_room": {
+        if (!parsedData.roomId) return;
+        user.rooms = user.rooms.filter((room) => room !== parsedData.roomId);
+        break;
+      }
+
+      case "chat": {
+        const { roomId, message } = parsedData;
+        if (!roomId || !message) return;
+
+        try {
+          await prismaClient.chat.create({
+            data: {
+              roomId: Number(roomId),
+              message,
+              userId,
+            },
+          });
+
+          users.forEach((u) => {
+            if (u.rooms.includes(roomId)) {
+              u.ws.send(
+                JSON.stringify({
+                  type: "chat",
+                  message,
+                  roomId,
+                })
+              );
+            }
+          });
+        } catch (err) {
+          console.error("Error saving message to DB:", err);
+        }
+
+        break;
+      }
+
+      default:
+        console.warn("Unknown message type:", parsedData.type);
     }
   });
+
+  ws.on("close", () => {
+    const index = users.findIndex((u) => u.ws === ws);
+    if (index !== -1) users.splice(index, 1);
+  });
+});
+
+setInterval(() => {
+  users.forEach((user) => {
+    if (user.ws.readyState === WebSocket.OPEN) {
+      user.ws.ping();
+    }
+  });
+}, 30000);
+
+server.listen(PORT, () => {
+  console.log(`WebSocket server listening on port ${PORT}`);
 });
