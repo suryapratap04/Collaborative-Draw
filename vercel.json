@@ -1,6 +1,6 @@
 {
-  "rootDirectory": "apps/frontend",
-  "buildCommand": "pnpm install --frozen-lockfile && pnpm build",
-  "outputDirectory": ".next",
+  "buildCommand": "pnpm turbo run build --filter=frontend...",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": "apps/frontend/.next",
   "framework": "nextjs"
 }
