@@ -39,14 +39,12 @@ app.use(
 );
 
 app.get("/", async (req: Request, res: Response) => {
-  const krish = await prismaClient.user.create({
-    data: {
+  const krish = await prismaClient.user.findFirst({
+    where: {
       email: "Krishna@gmail.com",
-      password: "123456",
-      name: "Krishna",
     },
   });
-  console.log("Krishna created:", krish);
+  console.log("Krishna :", krish);
   res.status(200).json({
     success: true,
     message: "Welcome to the Collaborative Draw Backend",
