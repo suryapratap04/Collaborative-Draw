@@ -1,4 +1,4 @@
 {
   "installCommand": "pnpm install",
-  "outputDirectory": "apps/web/.next"
+  "outputDirectory": ".next"
 }
