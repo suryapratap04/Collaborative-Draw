@@ -1,7 +1,0 @@
-{
-  "build": {
-    "env": {
-      "TURBO_IGNORE": "@collaborativedraw/backend @collaborativedraw/common @collaborativedraw/db @collaborativedraw/eslint-config @collaborativedraw/store @collaborativedraw/typescript-config @collaborativedraw/ui @collaborativedraw/ws-server"
-    }
-  }
-}
