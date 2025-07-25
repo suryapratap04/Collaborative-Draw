@@ -2,13 +2,8 @@
 
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setSession,
-  setUsername,
-  setUserId,
-  setToken,
-} from "@repo/store/userSlice";
-import { RootState } from "@repo/store/store";
+import { setSession, setUsername, setUserId, setToken } from "../app/userSlice";
+import { RootState } from "../app/store";
 import Link from "next/link";
 import { toast } from "react-toastify";
 

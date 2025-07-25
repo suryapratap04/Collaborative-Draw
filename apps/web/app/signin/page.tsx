@@ -6,12 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { HTTP_BACKEND } from "@/config";
-import {
-  setSession,
-  setToken,
-  setUserId,
-  setUsername,
-} from "@repo/store/userSlice";
+import { setSession, setToken, setUserId, setUsername } from "../userSlice";
 export default function SigninPage() {
   const dispatch = useDispatch();
   const router = useRouter();
