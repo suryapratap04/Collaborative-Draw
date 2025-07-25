@@ -1,6 +1,1 @@
-{
-  "buildCommand": "pnpm run build",
-  "installCommand": "corepack enable && corepack prepare pnpm@8.15.5 --activate && pnpm install",
-  "outputDirectory": "apps/web/.next",
-  "rootDir": "apps/web"
-}
+{}
