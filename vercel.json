@@ -1,3 +1,7 @@
 {
-  "installCommand": "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install"
+  "engines": {
+    "pnpm": "9.0.0"
+  },
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm build --filter=web"
 }
