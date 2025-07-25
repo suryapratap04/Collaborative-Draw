@@ -1,3 +1,6 @@
 {
-  "installCommand": "npm install"
+  "buildCommand": "pnpm turbo run build --filter=frontend...",
+  "outputDirectory": "apps/frontend/.next",
+  "rootDirectory": "apps/frontend",
+  "installCommand": "pnpm install"
 }

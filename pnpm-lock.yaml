@@ -76,10 +76,10 @@ importers:
   apps/frontend:
     dependencies:
       '@repo/store':
-        specifier: workspace:*
+        specifier: workspace:1.0.0
         version: link:../../packages/store
       '@repo/ui':
-        specifier: workspace:*
+        specifier: workspace:0
         version: link:../../packages/ui
       axios:
         specifier: ^1.7.9
