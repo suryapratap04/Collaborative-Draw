@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { HTTP_BACKEND } from "@/config";
+const HTTP_BACKEND = process.env.NEXT_PUBLIC_HTTP_BACKEND;
 export default function SigninPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({

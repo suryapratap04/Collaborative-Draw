@@ -5,8 +5,8 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { HTTP_BACKEND } from "@/config";
 import { setSession, setToken, setUserId, setUsername } from "../userSlice";
+const HTTP_BACKEND = process.env.NEXT_PUBLIC_HTTP_BACKEND;
 export default function SigninPage() {
   const dispatch = useDispatch();
   const router = useRouter();
