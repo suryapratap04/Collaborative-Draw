@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
 const HTTP_BACKEND = process.env.NEXT_PUBLIC_HTTP_BACKEND;
-console.log("HTTP_BACKEND", HTTP_BACKEND);
 
 export default function SignupPage() {
   const router = useRouter();
